@@ -353,7 +353,11 @@ RSpec.describe SolidusPaypalBraintree::Source, type: :model do
 
       context 'when last_digits is accessed multiple times' do
         include_context 'credit card created'
-        subject { 2.times.collect { payment_source.last_digits }.last }
+        subject do
+          payment_source.last_digits
+          payment_source.reload
+          payment_source.last_digits
+        end
 
         it 'ensures that braintree gateway is called just once' do
           expect(payment_method_gateway).to receive(:find).once

@@ -90,7 +90,7 @@ module SolidusPaypalBraintree
         card_type: payment_details_returned.card_type,
         cardholder_name: payment_details_returned.cardholder_name
       )
-      self.payment_details.save!
+      self.save!
       self.payment_details
     end
 

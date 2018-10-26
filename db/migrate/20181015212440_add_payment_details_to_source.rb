@@ -1,4 +1,4 @@
-class AddBraintreePaymentMethodToSource < SolidusSupport::Migration[4.2]
+class AddPaymentDetailsToSource < SolidusSupport::Migration[4.2]
   def up
     change_table :solidus_paypal_braintree_sources do |t|
       t.references :payment_details, polymorphic: true
