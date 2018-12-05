@@ -7,11 +7,11 @@ module SolidusPaypalBraintree::GatewayHelpers
         public_key:  'mwjkkxwcp32ckhnf',
         private_key: 'a9298f43b30c699db3072cc4a00f7f49',
         merchant_id: '7rdg92j7bm7fk5h3',
-        merchant_currency_map: {
-          'EUR' => 'stembolt_EUR'
+        store_merchant_map: {
+          'stembolt-eu' => 'stembolt_EUR'
         },
         paypal_payee_email_map: {
-          'EUR' => 'paypal+europe@example.com'
+          'stembolt-eu' => 'paypal+europe@example.com'
         }
       }
     }.merge(opts))

@@ -35,7 +35,7 @@ module SolidusPaypalBraintree
     preference(:merchant_id, :string, default: nil)
     preference(:public_key,  :string, default: nil)
     preference(:private_key, :string, default: nil)
-    preference(:merchant_currency_map, :hash, default: {})
+    preference(:store_merchant_map, :hash, default: {})
     preference(:paypal_payee_email_map, :hash, default: {})
 
     def partial_name
@@ -349,14 +349,16 @@ module SolidusPaypalBraintree
     end
 
     def merchant_account_for(_source, options)
-      if options[:currency]
-        preferred_merchant_currency_map[options[:currency]]
+      store_code = options[:store_code]
+
+      if store_code
+        preferred_store_merchant_map[store_code]
       end
     end
 
     def paypal_payee_email_for(source, options)
       if source.paypal?
-        preferred_paypal_payee_email_map[options[:currency]]
+        preferred_paypal_payee_email_map[options[:store_code]]
       end
     end
 
@@ -369,7 +371,7 @@ module SolidusPaypalBraintree
 
       merchant_account_id = merchant_account_for(
         payment.source,
-        { currency: payment.currency }
+        { store_code: payment.order.store.code }
       )
       if merchant_account_id
         params[:credit_card] ||= {}

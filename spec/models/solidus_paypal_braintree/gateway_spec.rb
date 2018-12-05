@@ -28,21 +28,21 @@ RSpec.describe SolidusPaypalBraintree::Gateway do
     context "with valid hash syntax" do
       let(:update_params) do
         {
-          preferred_merchant_currency_map: '{"EUR" => "test_merchant_account_id"}',
+          preferred_store_merchant_map: '{"store" => "test_merchant_account_id"}',
           preferred_paypal_payee_email_map: '{"CAD" => "bruce+wayne@example.com"}'
         }
       end
 
       it "successfully updates the preference" do
         subject
-        expect(gateway.preferred_merchant_currency_map).to eq({ "EUR" => "test_merchant_account_id" })
+        expect(gateway.preferred_store_merchant_map).to eq({ "store" => "test_merchant_account_id" })
         expect(gateway.preferred_paypal_payee_email_map).to eq({ "CAD" => "bruce+wayne@example.com" })
       end
     end
 
     context "with invalid user input" do
       let(:update_params) do
-        { preferred_merchant_currency_map: '{this_is_not_a_valid_hash}' }
+        { preferred_store_merchant_map: '{this_is_not_a_valid_hash}' }
       end
 
       it "raise a JSON parser error" do
@@ -200,17 +200,21 @@ RSpec.describe SolidusPaypalBraintree::Gateway do
         end
       end
 
-      context 'different merchant account for currency', vcr: { cassette_name: 'gateway/authorize/merchant_account/EUR' } do
-        let(:currency) { 'EUR' }
+      context 'different merchant account for store', vcr: { cassette_name: 'gateway/authorize/merchant_account/EUR' } do
+        before do
+          gateway_options.merge!(store_code: "stembolt-eu")
+        end
 
-        it 'settles with the correct currency' do
+        it 'settles with the correct merchant' do
           transaction = braintree.transaction.find(authorize.authorization)
           expect(transaction.merchant_account_id).to eq 'stembolt_EUR'
         end
       end
 
-      context 'different paypal payee email for currency', vcr: { cassette_name: 'gateway/authorize/paypal/EUR' } do
-        let(:currency) { 'EUR' }
+      context 'different paypal payee email for store code', vcr: { cassette_name: 'gateway/authorize/paypal/EUR' } do
+        before do
+          gateway_options.merge!(store_code: "stembolt-eu")
+        end
 
         it 'uses the correct payee email' do
           expect_any_instance_of(Braintree::TransactionGateway).
